@@ -5,7 +5,6 @@ set -e  # Dừng script nếu có lỗi xảy ra
 # Cài đặt các công cụ cần thiết
 yum -y install net-tools
 yum -y install epel-release
-yum install -y wget socat vim nano htop iotop netstat telnet mtr nmon traceroute unzip zip nmap multitail
 yum install -y iotop iftop wget
 
 # Tải và cài đặt HAProxy
