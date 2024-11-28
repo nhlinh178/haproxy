@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Tham số đầu vào
-DOMAIN_CERT_PATH="/etc/haproxy/certs/${DOMAIN}.pem"
-IPSERVER1="$IPSERVER1"
-IPSERVER2="$IPSERVER2"
-
+echo "Received DOMAIN: $DOMAIN"
+echo "Received IPSERVER1="$IPSERVER1"
+echo "Received IPSERVER2="$IPSERVER2"
 # Kiểm tra và tạo thư mục cert nếu chưa tồn tại
 if [ ! -d "/etc/haproxy/certs" ]; then
     mkdir -p /etc/haproxy/certs
@@ -55,7 +54,7 @@ listen stats
     stats auth isofh:HA@ISOFH
 
 frontend https_in
-    bind *:443 ssl crt $DOMAIN_CERT_PATH
+    bind *:443 ssl crt /etc/haproxy/certs/${DOMAIN}.pem
     mode http
     log global
     option httplog
