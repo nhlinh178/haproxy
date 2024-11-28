@@ -1,40 +1,53 @@
 #!/bin/bash
 
-# Kiểm tra tham số đầu vào
-if [ -z "$VIP" ] || [ -z "$INTERFACE" ]; then
-  echo "Vui lòng cung cấp giá trị VIP và INTERFACE."
-  exit 1
-fi
+# Tham số
+VIP=$VIP
+INTERFACE=$INTERFACE
+KEEPALIVED_STATE=$KEEPALIVED_STATE
 
-# Cài đặt Keepalived
-yum install keepalived -y
-
-# Sao lưu file cấu hình mặc định
-mv /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf-bak
-
-# Tạo file cấu hình mới cho Keepalived
-cat <<EOL > /etc/keepalived/keepalived.conf
+# Tạo cấu hình Keepalived cho node2
+if [ "$KEEPALIVED_STATE" == "MASTER" ]; then
+    echo '
 vrrp_script chk_haproxy {
     script "killall -0 haproxy"
-    interval 2 # every 2 seconds
-    weight 2   # add 2 points if OK
+    interval 2
+    weight 2
 }
 vrrp_instance VI_1 {
-    interface $INTERFACE
+    interface '${INTERFACE}'
     state MASTER
     virtual_router_id 51
     priority 101
     virtual_ipaddress {
-        $VIP
+        '${VIP}'
     }
     track_script {
         chk_haproxy
     }
+}' > /etc/keepalived/keepalived.conf
+elif [ "$KEEPALIVED_STATE" == "BACKUP" ]; then
+    echo '
+vrrp_script chk_haproxy {
+    script "killall -0 haproxy"
+    interval 2
+    weight 2
 }
-EOL
+vrrp_instance VI_1 {
+    interface '${INTERFACE}'
+    state BACKUP
+    virtual_router_id 51
+    priority 100
+    virtual_ipaddress {
+        '${VIP}'
+    }
+    track_script {
+        chk_haproxy
+    }
+}' > /etc/keepalived/keepalived.conf
+else
+    echo "Invalid KEEPALIVED_STATE value. Please use MASTER or BACKUP."
+    exit 1
+fi
 
-# Khởi động lại dịch vụ Keepalived
+# Khởi động lại Keepalived
 systemctl restart keepalived
-
-# Đảm bảo Keepalived khởi động cùng hệ thống
-systemctl enable keepalived
