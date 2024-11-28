@@ -6,11 +6,11 @@ echo "Received IPSERVER1="$IPSERVER1"
 echo "Received IPSERVER2="$IPSERVER2"
 # Kiểm tra và tạo thư mục cert nếu chưa tồn tại
 if [ ! -d "/etc/haproxy/certs" ]; then
-    mkdir -p /etc/haproxy/certs
+   sudo mkdir -p /etc/haproxy/certs
 fi
 # Kiểm tra và tạo file cert nếu chưa tồn tại
 if [ ! -d "/etc/haproxy/certs/${DOMAIN}.pem" ]; then
-    touch /etc/haproxy/certs/${DOMAIN}.pem
+   sudo touch /etc/haproxy/certs/${DOMAIN}.pem
 fi
 # Tạo file cấu hình HAProxy
 echo "
