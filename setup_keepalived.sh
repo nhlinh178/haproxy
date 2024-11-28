@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Tham số
-VIP=$VIP
-INTERFACE=$INTERFACE
-KEEPALIVED_STATE=$KEEPALIVED_STATE
+echo "Received VIP: $VIP"
+echo "Received INTERFACE: $INTERFACE"
+echo "Received KEEPALIVED_STATE: $KEEPALIVED_STATE"
 
 # Tạo cấu hình Keepalived cho node2
 if [ "$KEEPALIVED_STATE" == "MASTER" ]; then
