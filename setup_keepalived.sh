@@ -5,6 +5,13 @@ echo "Received VIP: $VIP"
 echo "Received INTERFACE: $INTERFACE"
 echo "Received KEEPALIVED_STATE: $KEEPALIVED_STATE"
 
+# Kiểm tra và cài đặt keepalived nếu chưa có
+if ! command -v keepalived &> /dev/null; then
+    echo "Keepalived is not installed. Installing..."
+    yum install -y keepalived
+else
+    echo "Keepalived is already installed."
+fi
 # Tạo cấu hình Keepalived cho node2
 if [ "$KEEPALIVED_STATE" == "MASTER" ]; then
     echo '
