@@ -9,15 +9,10 @@ IPSERVER2="$IPSERVER2"
 if [ ! -d "/etc/haproxy/certs" ]; then
     mkdir -p /etc/haproxy/certs
 fi
-
-# Copy file chứng chỉ vào thư mục /etc/haproxy/certs
-if [ ! -f "$DOMAIN_CERT_PATH" ]; then
-    echo "Copying certificate file to $DOMAIN_CERT_PATH..."
-    cp /path/to/your/domain.pem "$DOMAIN_CERT_PATH"
-else
-    echo "Certificate file already exists at $DOMAIN_CERT_PATH."
+# Kiểm tra và tạo file cert nếu chưa tồn tại
+if [ ! -d "/etc/haproxy/certs/${DOMAIN}.pem" ]; then
+    touch /etc/haproxy/certs/${DOMAIN}.pem
 fi
-
 # Tạo file cấu hình HAProxy
 echo "
 # Global settings
