@@ -20,7 +20,10 @@ systemctl status haproxy
 echo 'local0.*    /var/log/haproxy/haproxy-info.log
 local0.notice /var/log/haproxy/haproxy-admin.log' > /etc/rsyslog.d/haproxy.conf
 
-echo '$ModLoad imudp $UDPServerRun 514 $UDPServerAddress 127.0.0.1 ' >> /etc/rsyslog.conf
+echo '$ModLoad imudp 
+$UDPServerRun 514 
+$UDPServerAddress 127.0.0.1 ' 
+>> /etc/rsyslog.conf
 
 # Khởi động lại rsyslog để áp dụng cấu hình
 systemctl restart rsyslog
