@@ -1,25 +1,28 @@
 #!/bin/bash
 
 # Cấu hình
-NODE_EXPORTER_VERSION="1.8.2"
-NODE_EXPORTER_USER="node_exporter"
-DOWNLOAD_URL="https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
-
+echo " Cài đặt wget nếu chưa có..."
+if ! command -v wget &> /dev/null; then
+    echo "wget chưa được cài đặt. Đang cài đặt..."
+    sudo yum install -y wget
+else
+    echo "wget đã được cài đặt."
+fi 
 echo "[*] Tạo user hệ thống cho node_exporter..."
-sudo useradd --system --no-create-home --shell /bin/false $NODE_EXPORTER_USER
-
-echo "[*] Tải Node Exporter v${NODE_EXPORTER_VERSION}..."
-wget $DOWNLOAD_URL -O node_exporter.tar.gz
+if ! id "node_exporter" &>/dev/null; then
+    sudo useradd --system --no-create-home --shell /bin/false node_exporter
+else
+    echo "User node_exporter đã tồn tại."
+fi
+echo "[*] Tải Node Exporter v1.8.2..."
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
 
 echo "[*] Giải nén và di chuyển binary..."
-tar -xvf node_exporter.tar.gz
-cd node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64
-sudo mv node_exporter /usr/local/bin/
-
-echo "[*] Dọn dẹp..."
-cd ..
-rm -rf node_exporter*
-
+tar -xvf node_exporter-1.8.2.linux-amd64.tar.gz
+cd node_exporter-1.8.2.linux-amd64
+sudo cp node_exporter /usr/local/bin/
+sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+sudo chmod +x /usr/local/bin/node_exporter
 echo "[*] Tạo file service node_exporter..."
 sudo tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
 [Unit]
@@ -30,8 +33,8 @@ StartLimitIntervalSec=500
 StartLimitBurst=5
 
 [Service]
-User=${NODE_EXPORTER_USER}
-Group=${NODE_EXPORTER_USER}
+User=node_exporter
+Group=node_exporter
 Type=simple
 Restart=on-failure
 RestartSec=5s
@@ -42,7 +45,6 @@ WantedBy=multi-user.target
 EOF
 
 echo "[*] Kích hoạt và khởi động dịch vụ node_exporter..."
-sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable node_exporter
 sudo systemctl start node_exporter
