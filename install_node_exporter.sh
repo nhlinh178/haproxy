@@ -9,6 +9,12 @@ else
     echo "wget đã được cài đặt."
 fi 
 echo "[*] Tạo user hệ thống cho node_exporter..."
+if ! getent group node_exporter &>/dev/null; then
+    echo "Group node_exporter chưa tồn tại. Tiến hành tạo mới"
+    sudo groupadd --system node_exporter
+else
+    echo "Group node_exporter đã tồn tại."
+fi
 if ! id "node_exporter" &>/dev/null; then
     sudo useradd --system --no-create-home --shell /bin/false node_exporter
 else
